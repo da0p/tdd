@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/home/phuongdao/CrazyZone/experiment/c++/tdd/build/CMakePresets.json"
+    ]
+}
