@@ -21,13 +21,24 @@ private:
   std::string encodedDigits(std::string const& word) const
   {
     if(word.length() > 1) {
-      return encodedDigit();
+      return encodedDigit(word[1]);
     }
 
     return "";
   }
 
-  std::string encodedDigit() const { return "1"; }
+  std::string encodedDigit(char letter) const
+  {
+    if(letter == 'b') {
+      return "1";
+    }
+
+    if(letter == 'c') {
+      return "2";
+    }
+
+    return "";
+  }
 
   std::string zeroPad(std::string const& word) const
   {
