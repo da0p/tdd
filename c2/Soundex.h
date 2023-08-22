@@ -50,7 +50,8 @@ private:
       {'n', "5"},
       {'r', "6"}};
 
-    return encodings.find(letter)->second;
+    auto found = encodings.find(letter);
+    return found == encodings.end() ? "" : found->second;
   }
 
   std::string zeroPad(std::string const& word) const
