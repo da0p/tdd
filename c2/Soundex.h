@@ -1,6 +1,8 @@
 #ifndef SOUNDEX_H
 #define SOUNDEX_H
 
+#include <numeric>
+#include <ranges>
 #include <string>
 #include <unordered_map>
 
@@ -23,7 +25,13 @@ private:
 
   std::string encodedDigits(std::string const& word) const
   {
-    return word.empty() ? "" : encodedDigit(tail(word).front());
+    auto tailWords = tail(word);
+    return std::accumulate(
+      tailWords.begin(),
+      tailWords.end(),
+      std::string(),
+      [this](std::string const& a, char b) { return a + encodedDigit(b); }
+    );
   }
 
   std::string encodedDigit(char letter) const
