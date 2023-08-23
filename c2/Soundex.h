@@ -19,13 +19,11 @@ public:
 private:
   std::string head(std::string const& word) const { return word.substr(0, 1); }
 
+  std::string tail(std::string const& word) const { return word.substr(1); }
+
   std::string encodedDigits(std::string const& word) const
   {
-    if(word.length() > 1) {
-      return encodedDigit(word[1]);
-    }
-
-    return "";
+    return word.empty() ? "" : encodedDigit(tail(word).front());
   }
 
   std::string encodedDigit(char letter) const
