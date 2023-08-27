@@ -31,20 +31,32 @@ private:
   std::string encodedDigits(std::string const& word) const
   {
     std::string encoding;
+    encodeHead(encoding, word);
+    encodeTail(encoding, word);
 
+    return encoding;
+  }
+
+  void encodeHead(std::string& encoding, std::string const& word) const
+  {
     encoding += encodedDigit(word.front());
+  }
 
+  void encodeTail(std::string& encoding, std::string const& word) const
+  {
     for(auto letter : tail(word)) {
-      if(isComplete(encoding)) {
-        break;
-      }
-
-      auto digit = encodedDigit(letter);
-      if(digit != NotADigit && digit != lastDigit(encoding)) {
-        encoding += digit;
+      if(!isComplete(encoding)) {
+        encodeLetter(encoding, letter);
       }
     }
-    return encoding;
+  }
+
+  void encodeLetter(std::string& encoding, char letter) const
+  {
+    auto digit = encodedDigit(letter);
+    if(digit != NotADigit && digit != lastDigit(encoding)) {
+      encoding += digit;
+    }
   }
 
   std::string lastDigit(std::string const& encoding) const
