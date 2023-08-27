@@ -42,3 +42,8 @@ TEST_F(SoundexEncoding, LimitsLengthToFourCharacters)
 {
   ASSERT_THAT(soundex.encode("Dcdln").length(), Eq(4u));
 }
+
+TEST_F(SoundexEncoding, IgnoresVowelLikeLetters)
+{
+  ASSERT_THAT(soundex.encode("BaAeEiIoOuUhHyYcCdDlL"), Eq("B234"));
+}

@@ -8,6 +8,8 @@
 
 namespace {
 constexpr size_t MaxCodeLength{4};
+
+const std::string NotADigit{"*"};
 }
 
 class Soundex
@@ -15,11 +17,14 @@ class Soundex
 public:
   std::string encode(std::string const& word) const
   {
-    return zeroPad(head(word) + encodedDigits(word));
+    return zeroPad(upperFront(word) + encodedDigits(tail(word)));
   }
 
 private:
-  std::string head(std::string const& word) const { return word.substr(0, 1); }
+  std::string upperFront(std::string const& s) const
+  {
+    return std::string(1, std::toupper(static_cast<unsigned char>(s.front())));
+  }
 
   std::string tail(std::string const& word) const { return word.substr(1); }
 
@@ -30,9 +35,21 @@ private:
       if(isComplete(encoding)) {
         break;
       }
-      encoding += encodedDigit(letter);
+
+      auto digit = encodedDigit(letter);
+      if(digit != NotADigit && digit != lastDigit(encoding)) {
+        encoding += digit;
+      }
     }
     return encoding;
+  }
+
+  std::string lastDigit(std::string const& encoding) const
+  {
+    if(encoding.empty()) {
+      return NotADigit;
+    }
+    return std::string(1, encoding.back());
   }
 
   bool isComplete(std::string const& encoding) const
@@ -63,7 +80,7 @@ private:
       {'r', "6"}};
 
     auto found = encodings.find(letter);
-    return found == encodings.end() ? "" : found->second;
+    return found == encodings.end() ? "*" : found->second;
   }
 
   std::string zeroPad(std::string const& word) const
