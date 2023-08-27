@@ -25,13 +25,19 @@ private:
 
   std::string encodedDigits(std::string const& word) const
   {
-    auto tailWords = tail(word);
-    return std::accumulate(
-      tailWords.begin(),
-      tailWords.end(),
-      std::string(),
-      [this](std::string const& a, char b) { return a + encodedDigit(b); }
-    );
+    std::string encoding;
+    for(auto letter : word) {
+      if(isComplete(encoding)) {
+        break;
+      }
+      encoding += encodedDigit(letter);
+    }
+    return encoding;
+  }
+
+  bool isComplete(std::string const& encoding) const
+  {
+    return encoding.length() == MaxCodeLength - 1;
   }
 
   std::string encodedDigit(char letter) const
