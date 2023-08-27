@@ -79,8 +79,13 @@ private:
       {'n', "5"},
       {'r', "6"}};
 
-    auto found = encodings.find(letter);
+    auto found = encodings.find(lower(letter));
     return found == encodings.end() ? "*" : found->second;
+  }
+
+  char lower(char c) const
+  {
+    return std::tolower(static_cast<unsigned char>(c));
   }
 
   std::string zeroPad(std::string const& word) const

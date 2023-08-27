@@ -47,3 +47,8 @@ TEST_F(SoundexEncoding, IgnoresVowelLikeLetters)
 {
   ASSERT_THAT(soundex.encode("BaAeEiIoOuUhHyYcCdDlL"), Eq("B234"));
 }
+
+TEST_F(SoundexEncoding, IgnoresCaseWhenEncodingConsonants)
+{
+  ASSERT_THAT(soundex.encode("BCDL"), Eq(soundex.encode("Bcdl")));
+}
