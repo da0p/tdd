@@ -56,6 +56,15 @@ TEST_F(AnAddressExtractor, ReturnEmptyStringIfInputIsNotAValidJson)
   ASSERT_THAT(address, Eq(""));
 }
 
+TEST_F(AnAddressExtractor, ReturnEmptyStringIfRequiredFieldsIsEmpty)
+{
+  auto address = mAddressExtractor.addressFrom(
+    R"({"address": {"road": "Drury Ln", "city": "Fountain", "state": "CO", "country": "US"}})"
+  );
+
+  ASSERT_THAT(address, Eq(""));
+}
+
 class APlaceDescriptionService : public ::testing::Test
 {
 public:

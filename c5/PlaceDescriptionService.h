@@ -21,6 +21,10 @@ struct AddressExtractor
       return EmptyString;
     }
 
+    if(requiredFields.empty()) {
+      return EmptyString;
+    }
+
     std::string address;
     rapidjson::Value const& addressInfo = document[MandatoryFirstWord];
     for(auto const& field : requiredFields) {
