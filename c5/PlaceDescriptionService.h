@@ -18,12 +18,12 @@ struct AddressExtractor
 
     rapidjson::Document document;
     document.Parse(jsonResponse.c_str());
-    if(!document.HasMember("address")) {
+    if(!document.HasMember(MandatoryFirstWord)) {
       return "";
     }
 
     std::string address;
-    rapidjson::Value const& addressInfo = document["address"];
+    rapidjson::Value const& addressInfo = document[MandatoryFirstWord];
     for(auto const& field : requiredFields) {
       if(!addressInfo.HasMember(field.c_str())) {
         return "";
@@ -38,6 +38,8 @@ struct AddressExtractor
   }
 
   std::vector<std::string> requiredFields{};
+  static constexpr auto MandatoryFirstWord{"address"};
+  static constexpr auto EmptyString = "";
 };
 
 class PlaceDescriptionService
