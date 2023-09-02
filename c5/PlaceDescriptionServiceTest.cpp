@@ -1,5 +1,6 @@
 #include "PlaceDescriptionService.h"
 #include "Http.h"
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 using ::testing::Eq;
@@ -24,4 +25,6 @@ TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
   PlaceDescriptionService service{&httpStub};
 
   auto description = service.summaryDescription("", "");
+
+  ASSERT_THAT(description, Eq(""));
 }

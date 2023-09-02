@@ -11,6 +11,14 @@ public:
   {
   }
 
+  std::string summaryDescription(
+    std::string const& lattitude,
+    std::string const& longitude
+  ) const
+  {
+    return "";
+  }
+
 private:
   Http* mHttp;
 };
