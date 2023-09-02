@@ -13,20 +13,20 @@ struct AddressExtractor
   std::string addressFrom(std::string const& jsonResponse)
   {
     if(jsonResponse.empty()) {
-      return "";
+      return EmptyString;
     }
 
     rapidjson::Document document;
     document.Parse(jsonResponse.c_str());
     if(!document.HasMember(MandatoryFirstWord)) {
-      return "";
+      return EmptyString;
     }
 
     std::string address;
     rapidjson::Value const& addressInfo = document[MandatoryFirstWord];
     for(auto const& field : requiredFields) {
       if(!addressInfo.HasMember(field.c_str())) {
-        return "";
+        return EmptyString;
       }
       address += addressInfo[field.c_str()].GetString();
       address += ", ";

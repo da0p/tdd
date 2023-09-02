@@ -47,6 +47,16 @@ TEST_F(AnAddressExtractor, ReturnStringContainsValuesTakenFromMoreSpecifiedKeys)
   ASSERT_THAT(address, Eq("Drury Ln, Fountain, CO, US"));
 }
 
+TEST_F(AnAddressExtractor, ReturnEmptyStringIfInputDoesNotContainRequireFields)
+{
+  mAddressExtractor.requiredFields = {"road", "city", "state", "country"};
+  auto address = mAddressExtractor.addressFrom(
+    R"({"address": {"road": "Drury Ln", "city": "Fountain", "state": "CO", "landscape": "dessert"}})"
+  );
+
+  ASSERT_THAT(address, Eq(""));
+}
+
 class APlaceDescriptionService : public ::testing::Test
 {
 public:
