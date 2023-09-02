@@ -17,7 +17,10 @@ struct AddressExtractor
     }
 
     rapidjson::Document document;
-    document.Parse(jsonResponse.c_str());
+    if(document.Parse(jsonResponse.c_str()).HasParseError()) {
+      return EmptyString;
+    }
+
     if(!document.HasMember(MandatoryFirstWord)) {
       return EmptyString;
     }

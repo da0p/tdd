@@ -57,6 +57,12 @@ TEST_F(AnAddressExtractor, ReturnEmptyStringIfInputDoesNotContainRequireFields)
   ASSERT_THAT(address, Eq(""));
 }
 
+TEST_F(AnAddressExtractor, ReturnEmptyStringIfInputIsNotAValidJson)
+{
+  auto address = mAddressExtractor.addressFrom("XYX: ");
+  ASSERT_THAT(address, Eq(""));
+}
+
 class APlaceDescriptionService : public ::testing::Test
 {
 public:
