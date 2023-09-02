@@ -12,12 +12,19 @@ struct AddressExtractor
 
   std::string addressFrom(std::string const& jsonResponse)
   {
-    std::string address;
+    if(jsonResponse.empty()) {
+      return "";
+    }
 
+    std::string address;
     rapidjson::Document document;
     document.Parse(jsonResponse.c_str());
 
-    return "???";
+    if(!document.HasMember("address")) {
+      return "";
+    }
+
+    return address;
   }
 
   std::vector<std::string> requiredFields{};
