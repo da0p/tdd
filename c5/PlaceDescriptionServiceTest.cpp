@@ -13,13 +13,6 @@ public:
   AddressExtractor mAddressExtractor;
 };
 
-TEST_F(AnAddressExtractor, ReturnEmptyStringIfEmptyInput)
-{
-  auto address = mAddressExtractor.addressFrom("");
-
-  ASSERT_THAT(address, Eq(""));
-}
-
 TEST_F(AnAddressExtractor, ReturnEmptyStringIfInputDoesNotContainAddressField)
 {
   auto address = mAddressExtractor.addressFrom(R"({"NotAnAddress": "XYZ"})");

@@ -12,10 +12,6 @@ struct AddressExtractor
 
   std::string addressFrom(std::string const& jsonResponse)
   {
-    if(jsonResponse.empty()) {
-      return EmptyString;
-    }
-
     rapidjson::Document document;
     if(document.Parse(jsonResponse.c_str()).HasParseError()) {
       return EmptyString;
