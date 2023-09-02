@@ -79,21 +79,24 @@ public:
   std::string get(std::string const& url) const override
   {
     verify(url);
-    return R"({"address": {"road": "Drury Ln", "city": "Fountain", "state": "CO", "country": "US"}
-  }})";
+    return R"({"address": {"road": "Drury Ln", "city": "Fountain", "state": "CO", "country": "US"}})";
   }
 
   void verify(std::string const& url) const
   {
-    auto expectedArgs{
+    std::string urlStart{
+      "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&"};
+
+    std::string expected{
+      urlStart +
       "lat=" + std::string(APlaceDescriptionService::ValidLattitude) + "&" +
       "lon=" + std::string(APlaceDescriptionService::ValidLongitude)};
 
-    ASSERT_THAT(url, EndsWith(expectedArgs));
+    ASSERT_THAT(url, Eq(expected));
   }
 };
 
-TEST_F(APlaceDescriptionService, DISABLED_ReturnsDescriptionForValidLocation)
+TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 {
   HttpStub httpStub;
   PlaceDescriptionService service{&httpStub};

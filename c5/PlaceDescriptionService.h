@@ -49,16 +49,35 @@ public:
   {
   }
 
-  std::string summaryDescription(
-    std::string const& lattitude,
-    std::string const& longitude
-  ) const
+  std::string
+  summaryDescription(std::string const& lattitude, std::string const& longitude)
   {
-    auto getRequestUrl = "lat=" + lattitude + "&lon=" + longitude;
+    auto getRequestUrl = createGetRequestUrl(lattitude, longitude);
     auto jsonResponse = mHttp->get(getRequestUrl);
+
+    AddressExtractor extractor;
+    extractor.requiredFields = {"road", "city", "state", "country"};
+
+    auto address = extractor.addressFrom(jsonResponse);
+
+    return address;
   }
 
 private:
+  std::string
+  createGetRequestUrl(std::string const& latitude, std::string const& longitude)
+  {
+    std::string server{"http://open.mapquestapi.com/"};
+    std::string document{"nominatim/v1/reverse"};
+    return server + document + "?" + keyValue("format", "json") + "&" +
+           keyValue("lat", latitude) + "&" + keyValue("lon", longitude);
+  }
+
+  std::string keyValue(std::string const& key, std::string const& value)
+  {
+    return key + "=" + value;
+  }
+
   Http* mHttp;
 };
 
