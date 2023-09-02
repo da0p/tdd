@@ -17,14 +17,21 @@ public:
 };
 
 class APlaceDescriptionService : public ::testing::Test
-{};
+{
+public:
+  static auto constexpr ValidLattitude{"11.22"};
+  static auto constexpr ValidLongitude{"22.33"};
+};
 
 TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 {
   HttpStub httpStub;
   PlaceDescriptionService service{&httpStub};
 
-  auto description = service.summaryDescription("", "");
+  auto description = service.summaryDescription(
+    APlaceDescriptionService::ValidLattitude,
+    APlaceDescriptionService::ValidLongitude
+  );
 
-  ASSERT_THAT(description, Eq(""));
+  ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
 }
