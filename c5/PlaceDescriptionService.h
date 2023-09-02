@@ -16,18 +16,23 @@ struct AddressExtractor
       return "";
     }
 
-    std::string address;
     rapidjson::Document document;
     document.Parse(jsonResponse.c_str());
-
     if(!document.HasMember("address")) {
       return "";
     }
 
+    std::string address;
     rapidjson::Value const& addressInfo = document["address"];
-    if(addressInfo.HasMember(requiredFields[0].c_str())) {
-      address += addressInfo[requiredFields[0].c_str()].GetString();
+    for(auto const& field : requiredFields) {
+      if(!addressInfo.HasMember(field.c_str())) {
+        return "";
+      }
+      address += addressInfo[field.c_str()].GetString();
+      address += ", ";
     }
+    address.pop_back();
+    address.pop_back();
 
     return address;
   }
