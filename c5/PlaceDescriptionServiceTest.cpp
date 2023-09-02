@@ -20,6 +20,14 @@ TEST_F(AnAddressExtractor, ReturnEmptyStringIfEmptyInput)
   ASSERT_THAT(address, Eq(""));
 }
 
+TEST_F(AnAddressExtractor, ReturnEmptyStringIfInputDoesNotContainAddressField)
+{
+  auto address =
+    mAddressExtractor.addressFrom(R"({"NotAnAddress":{"road": "Jury"}})");
+
+  ASSERT_THAT(address, Eq(""));
+}
+
 class APlaceDescriptionService : public ::testing::Test
 {
 public:

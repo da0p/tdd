@@ -4,13 +4,23 @@
 #include "Http.h"
 #include <rapidjson/document.h>
 #include <stdexcept>
+#include <vector>
 
-class AddressExtractor
+struct AddressExtractor
 {
-public:
   AddressExtractor() = default;
 
-  std::string addressFrom(std::string const& jsonResponse) { return ""; }
+  std::string addressFrom(std::string const& jsonResponse)
+  {
+    std::string address;
+
+    rapidjson::Document document;
+    document.Parse(jsonResponse.c_str());
+
+    return "???";
+  }
+
+  std::vector<std::string> requiredFields{};
 };
 
 class PlaceDescriptionService
