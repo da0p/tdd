@@ -5,6 +5,6 @@ set(CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}" ${CMAKE_PREFIX_PATH})
 
 find_package(GTest REQUIRED)
 find_package(CURL REQUIRED)
-find_library(JSONCPP_LIB NAMES jsoncpp)
+find_package(RapidJSON REQUIRED)
 find_package(SPDLOG_LIB NAMES spdlog)
 find_package(fmt REQUIRED)
