@@ -24,6 +24,11 @@ struct AddressExtractor
       return "";
     }
 
+    rapidjson::Value const& addressInfo = document["address"];
+    if(addressInfo.HasMember(requiredFields[0].c_str())) {
+      address += addressInfo[requiredFields[0].c_str()].GetString();
+    }
+
     return address;
   }
 
