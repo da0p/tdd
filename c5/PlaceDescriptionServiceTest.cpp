@@ -2,6 +2,8 @@
 #include "Http.h"
 #include <gtest/gtest.h>
 
+using ::testing::Eq;
+
 class HttpStub : public Http
 {
 public:
@@ -20,4 +22,6 @@ TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 {
   HttpStub httpStub;
   PlaceDescriptionService service{&httpStub};
+
+  auto description = service.summaryDescription("", "");
 }
