@@ -27,4 +27,6 @@ A repo created to practice test-driven development following the book TDD With M
 ```
 
 # Notes
-- "The cycle of TDD is to write a small test, ensure it fails, get it to pass, review and clean up the design (including that of the tests), and ensure the tests all still pass. Repeat the cycle throughout the day, keeping it short to maximize the feedback it gives you"
+- The cycle of TDD is to write a small test, ensure it fails, get it to pass, review and clean up the design (including that of the tests), and ensure the tests all still pass. Repeat the cycle throughout the day, keeping it short to maximize the feedback it gives you
+
+- Use NiceMock when needed, but not habitually. Seek to fix your design if requiring it often.
