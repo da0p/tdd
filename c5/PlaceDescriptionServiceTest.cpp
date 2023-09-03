@@ -1,10 +1,12 @@
 #include "PlaceDescriptionService.h"
 #include "Http.h"
+#include "gmock/gmock.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 class AnAddressExtractor : public ::testing::Test
@@ -81,7 +83,7 @@ public:
 
 TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 {
-  HttpStub httpStub;
+  NiceMock<HttpStub> httpStub;
   EXPECT_CALL(httpStub, get(_))
     .WillOnce(Return(
       R"({"address":{"road":"Drury Ln", "city":"Fountain", "state":"CO", "country":"US"}})"
@@ -94,4 +96,21 @@ TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
   );
 
   ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
+}
+
+TEST_F(APlaceDescriptionService, MakesHttpRequestToObtainAddress)
+{
+  HttpStub httpStub;
+  std::string urlStart{
+    "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&"};
+  auto expectedURL = urlStart +
+                     "lat=" + APlaceDescriptionService::ValidLattitude + "&" +
+                     "lon=" + APlaceDescriptionService::ValidLongitude;
+  EXPECT_CALL(httpStub, initialize());
+  EXPECT_CALL(httpStub, get(expectedURL));
+  PlaceDescriptionService service{&httpStub};
+  service.summaryDescription(
+    APlaceDescriptionService::ValidLattitude,
+    APlaceDescriptionService::ValidLongitude
+  );
 }

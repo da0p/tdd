@@ -49,11 +49,17 @@ public:
   {
   }
 
+  std::string get(std::string const& url) const
+  {
+    mHttp->initialize();
+    return mHttp->get(url);
+  }
+
   std::string
   summaryDescription(std::string const& lattitude, std::string const& longitude)
   {
     auto getRequestUrl = createGetRequestUrl(lattitude, longitude);
-    auto jsonResponse = mHttp->get(getRequestUrl);
+    auto jsonResponse = get(getRequestUrl);
 
     AddressExtractor extractor;
     extractor.requiredFields = {"road", "city", "state", "country"};
