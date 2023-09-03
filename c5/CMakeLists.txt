@@ -4,6 +4,7 @@ add_executable(PlaceDescriptionServiceTest
 
 target_link_libraries(PlaceDescriptionServiceTest
     GTest::gtest
+    GTest::gmock
     GTest::gtest_main
     rapidjson
 )
