@@ -6,6 +6,7 @@
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::InSequence;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -100,6 +101,7 @@ TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 
 TEST_F(APlaceDescriptionService, MakesHttpRequestToObtainAddress)
 {
+  InSequence forceExpectationOrder;
   HttpStub httpStub;
   std::string urlStart{
     "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&"};
