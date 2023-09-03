@@ -4,7 +4,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using ::testing::EndsWith;
 using ::testing::Eq;
 
 class AnAddressExtractor : public ::testing::Test
@@ -75,30 +74,35 @@ public:
 class HttpStub : public Http
 {
 public:
+  std::string returnResponse;
+  std::string expectedURL;
+
   void initialize() override {}
   std::string get(std::string const& url) const override
   {
     verify(url);
-    return R"({"address": {"road": "Drury Ln", "city": "Fountain", "state": "CO", "country": "US"}})";
+    return returnResponse;
   }
 
   void verify(std::string const& url) const
   {
-    std::string urlStart{
-      "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&"};
-
-    std::string expected{
-      urlStart +
-      "lat=" + std::string(APlaceDescriptionService::ValidLattitude) + "&" +
-      "lon=" + std::string(APlaceDescriptionService::ValidLongitude)};
-
-    ASSERT_THAT(url, Eq(expected));
+    ASSERT_THAT(url, Eq(expectedURL));
   }
 };
 
 TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 {
   HttpStub httpStub;
+  httpStub.returnResponse =
+    R"({"address":{"road":"Drury Ln", "city":"Fountain", "state":"CO", "country":"US"}})";
+
+  std::string urlStart{
+    "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&"};
+
+  httpStub.expectedURL = {
+    urlStart + "lat=" + std::string(APlaceDescriptionService::ValidLattitude) +
+    "&" + "lon=" + std::string(APlaceDescriptionService::ValidLongitude)};
+
   PlaceDescriptionService service{&httpStub};
 
   auto description = service.summaryDescription(
