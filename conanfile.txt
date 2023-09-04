@@ -9,3 +9,6 @@ rapidjson/cci.20220822
 [generators]
 CMakeDeps
 CMakeToolchain
+
+[layout]
+cmake_layout

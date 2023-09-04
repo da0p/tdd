@@ -13,3 +13,8 @@ add_library(Portfolio
     Portfolio.h
     Portfolio.cpp
 )
+
+target_link_libraries(Portfolio
+PUBLIC
+    boost::boost
+)

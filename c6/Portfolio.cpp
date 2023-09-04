@@ -1,5 +1,6 @@
 #include "Portfolio.h"
 #include <stdexcept>
+#include <unistd.h>
 
 class InvalidPurchaseException : public std::exception
 {
@@ -31,12 +32,17 @@ Portfolio::isEmpty() const
 }
 
 void
-Portfolio::purchase(std::string const& symbol, unsigned int shares)
+Portfolio::purchase(
+  std::string const& symbol,
+  unsigned int shares,
+  boost::gregorian::date const& transactionDate
+)
 {
   if(0 == shares) {
     throw InvalidPurchaseException();
   }
   mHoldings[symbol] = shares + shareCount(symbol);
+  mPurchases.push_back(PurchaseRecord(shares, transactionDate));
 }
 
 void
@@ -56,4 +62,10 @@ Portfolio::shareCount(std::string const& symbol) const
     return 0;
   }
   return it->second;
+}
+
+std::vector<PurchaseRecord>
+Portfolio::purchases(std::string const& symbol) const
+{
+  return mPurchases;
 }

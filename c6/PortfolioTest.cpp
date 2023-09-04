@@ -7,10 +7,24 @@ class APortfolio : public Test
 {
 public:
   static const std::string IBM;
+  static const std::string SAMSUNG;
   Portfolio mPortfolio;
+  static const boost::gregorian::date ArbitraryDate;
+
+  void purchase(
+    std::string const& symbol,
+    unsigned int shares,
+    boost::gregorian::date const& transactionDate = APortfolio::ArbitraryDate
+  )
+  {
+    mPortfolio.purchase(symbol, shares, transactionDate);
+  }
 };
 
 const std::string APortfolio::IBM{"IBM"};
+const std::string APortfolio::SAMSUNG{"SAMSUNG"};
+const boost::gregorian::date APortfolio::ArbitraryDate{
+  boost::gregorian::date(2014, boost::date_time::Jan, 1)};
 
 TEST_F(APortfolio, IsEmptyWhenCreated)
 {
@@ -19,7 +33,7 @@ TEST_F(APortfolio, IsEmptyWhenCreated)
 
 TEST_F(APortfolio, IsNotEmptyAfterPurchase)
 {
-  mPortfolio.purchase(IBM, 1u);
+  purchase(IBM, 1u);
   ASSERT_FALSE(mPortfolio.isEmpty());
 }
 
@@ -30,6 +44,25 @@ TEST_F(APortfolio, AnswersZeroForShareCountOfUnpurchasedSymbol)
 
 TEST_F(APortfolio, AnswersShareCountForPurchasedSymbol)
 {
-  mPortfolio.purchase(IBM, 2u);
+  purchase(IBM, 2u);
   ASSERT_THAT(mPortfolio.shareCount(IBM), Eq(2u));
+}
+
+TEST_F(APortfolio, AnswersThePurchaseRecordForASinglePurchase)
+{
+  boost::gregorian::date dateOfPurchase(2014, boost::date_time::Mar, 17);
+  mPortfolio.purchase(SAMSUNG, 5, dateOfPurchase);
+
+  auto purchases = mPortfolio.purchases(SAMSUNG);
+  auto purchase = purchases[0];
+  ASSERT_THAT(purchase.mShareCount, Eq(5u));
+  ASSERT_THAT(purchase.mDate, Eq(dateOfPurchase));
+}
+
+TEST_F(APortfolio, ReducesShareCountOfSymbolOnSell)
+{
+  purchase(SAMSUNG, 30);
+  mPortfolio.sell(SAMSUNG, 13);
+
+  ASSERT_THAT(mPortfolio.shareCount(SAMSUNG), Eq(30u - 13));
 }
