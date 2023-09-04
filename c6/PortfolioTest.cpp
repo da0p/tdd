@@ -3,6 +3,19 @@
 
 using namespace ::testing;
 
+namespace {
+void
+ASSERT_PURCHASE(
+  PurchaseRecord& purchase,
+  int shares,
+  boost::gregorian::date const& date
+)
+{
+  ASSERT_THAT(purchase.mShareCount, Eq(shares));
+  ASSERT_THAT(purchase.mDate, Eq(date));
+}
+}
+
 class APortfolio : public Test
 {
 public:
@@ -18,6 +31,15 @@ public:
   )
   {
     mPortfolio.purchase(symbol, shares, transactionDate);
+  }
+
+  void sell(
+    std::string const& symbol,
+    unsigned int shares,
+    boost::gregorian::date const& transactionDate = APortfolio::ArbitraryDate
+  )
+  {
+    mPortfolio.sell(symbol, shares, transactionDate);
   }
 };
 
@@ -50,19 +72,25 @@ TEST_F(APortfolio, AnswersShareCountForPurchasedSymbol)
 
 TEST_F(APortfolio, AnswersThePurchaseRecordForASinglePurchase)
 {
-  boost::gregorian::date dateOfPurchase(2014, boost::date_time::Mar, 17);
-  mPortfolio.purchase(SAMSUNG, 5, dateOfPurchase);
+  purchase(SAMSUNG, 5);
 
   auto purchases = mPortfolio.purchases(SAMSUNG);
-  auto purchase = purchases[0];
-  ASSERT_THAT(purchase.mShareCount, Eq(5u));
-  ASSERT_THAT(purchase.mDate, Eq(dateOfPurchase));
+  ASSERT_PURCHASE(purchases[0], 5, ArbitraryDate);
+}
+
+TEST_F(APortfolio, IncludesSalesInPurchaseRecords)
+{
+  purchase(SAMSUNG, 10);
+  sell(SAMSUNG, 5, ArbitraryDate);
+
+  auto sales = mPortfolio.purchases(SAMSUNG);
+  ASSERT_PURCHASE(sales[1], -5, ArbitraryDate);
 }
 
 TEST_F(APortfolio, ReducesShareCountOfSymbolOnSell)
 {
   purchase(SAMSUNG, 30);
-  mPortfolio.sell(SAMSUNG, 13);
+  sell(SAMSUNG, 13);
 
   ASSERT_THAT(mPortfolio.shareCount(SAMSUNG), Eq(30u - 13));
 }

@@ -4,6 +4,7 @@
         "conan": {}
     },
     "include": [
-        "/home/phuongdao/CrazyZone/experiment/c++/tdd/build/CMakePresets.json"
+        "/home/phuongdao/CrazyZone/experiment/c++/tdd/build/CMakePresets.json",
+        "/home/phuongdao/CrazyZone/experiment/c++/tdd/build/build/Debug/generators/CMakePresets.json"
     ]
 }

@@ -46,12 +46,17 @@ Portfolio::purchase(
 }
 
 void
-Portfolio::sell(std::string const& symbol, unsigned int shares)
+Portfolio::sell(
+  std::string const& symbol,
+  unsigned int shares,
+  boost::gregorian::date const& transactionDate
+)
 {
   if(shares > shareCount(symbol)) {
     throw InvalidSellException();
   }
   mHoldings[symbol] = shareCount(symbol) - shares;
+  mPurchases.push_back(PurchaseRecord(-shares, transactionDate));
 }
 
 unsigned int

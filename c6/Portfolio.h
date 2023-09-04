@@ -8,13 +8,13 @@
 
 struct PurchaseRecord
 {
-  PurchaseRecord(unsigned int shareCount, boost::gregorian::date const& date)
+  PurchaseRecord(int shareCount, boost::gregorian::date const& date)
     : mShareCount{shareCount}
     , mDate{date}
   {
   }
 
-  unsigned int mShareCount;
+  int mShareCount;
   boost::gregorian::date mDate;
 };
 
@@ -29,7 +29,11 @@ public:
     boost::gregorian::date const& transactionDate
   );
   unsigned int shareCount(std::string const& symbol) const;
-  void sell(std::string const& symbol, unsigned int shares);
+  void sell(
+    std::string const& symbol,
+    unsigned int shares,
+    boost::gregorian::date const& transactionDate
+  );
   std::vector<PurchaseRecord> purchases(std::string const& symbol) const;
 
 private:
