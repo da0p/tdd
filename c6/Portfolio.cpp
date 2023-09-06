@@ -2,33 +2,6 @@
 #include <stdexcept>
 #include <unistd.h>
 
-class InvalidPurchaseException : public std::exception
-{
-public:
-  char const* what() const noexcept override
-  {
-    return "Can't purchase 0 share.";
-  }
-};
-
-class InvalidSellException : public std::exception
-{
-public:
-  char const* what() const noexcept override
-  {
-    return "Can't sell more shares than remaining shares.";
-  }
-};
-
-class ShareCountCannotBeZeroException : public std::exception
-{
-public:
-  char const* what() const noexcept override
-  {
-    return "Shares count can't be zero.";
-  }
-};
-
 Portfolio::Portfolio()
   : mIsEmpty{true}
 {
@@ -58,7 +31,7 @@ Portfolio::sell(
 )
 {
   if(shares > shareCount(symbol)) {
-    throw InvalidSellException();
+    throw InsufficientSharesException();
   }
   transact(symbol, -shares, transactionDate);
 }

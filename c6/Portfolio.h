@@ -6,6 +6,24 @@
 #include <unordered_map>
 #include <vector>
 
+class InsufficientSharesException : public std::exception
+{
+public:
+  char const* what() const noexcept override
+  {
+    return "Can't sell more shares than remaining shares.";
+  }
+};
+
+class ShareCountCannotBeZeroException : public std::exception
+{
+public:
+  char const* what() const noexcept override
+  {
+    return "Shares count can't be zero.";
+  }
+};
+
 struct PurchaseRecord
 {
   PurchaseRecord(int shareCount, boost::gregorian::date const& date)

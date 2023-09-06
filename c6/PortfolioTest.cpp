@@ -94,3 +94,8 @@ TEST_F(APortfolio, ReducesShareCountOfSymbolOnSell)
 
   ASSERT_THAT(mPortfolio.shareCount(SAMSUNG), Eq(30u - 13));
 }
+
+TEST_F(APortfolio, ThrowsWhenSellingMoreSharesThanPurchased)
+{
+  ASSERT_THROW(sell(SAMSUNG, 1), InsufficientSharesException);
+}
