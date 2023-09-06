@@ -37,6 +37,11 @@ public:
   std::vector<PurchaseRecord> purchases(std::string const& symbol) const;
 
 private:
+  void transact(
+    std::string const& symbol,
+    int shareChange,
+    boost::gregorian::date const& transactionDate
+  );
   bool mIsEmpty;
   std::unordered_map<std::string, unsigned int> mHoldings;
   std::vector<PurchaseRecord> mPurchases;

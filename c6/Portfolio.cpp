@@ -20,6 +20,15 @@ public:
   }
 };
 
+class ShareCountCannotBeZeroException : public std::exception
+{
+public:
+  char const* what() const noexcept override
+  {
+    return "Shares count can't be zero.";
+  }
+};
+
 Portfolio::Portfolio()
   : mIsEmpty{true}
 {
@@ -38,11 +47,7 @@ Portfolio::purchase(
   boost::gregorian::date const& transactionDate
 )
 {
-  if(0 == shares) {
-    throw InvalidPurchaseException();
-  }
-  mHoldings[symbol] = shares + shareCount(symbol);
-  mPurchases.push_back(PurchaseRecord(shares, transactionDate));
+  transact(symbol, shares, transactionDate);
 }
 
 void
@@ -55,8 +60,21 @@ Portfolio::sell(
   if(shares > shareCount(symbol)) {
     throw InvalidSellException();
   }
-  mHoldings[symbol] = shareCount(symbol) - shares;
-  mPurchases.push_back(PurchaseRecord(-shares, transactionDate));
+  transact(symbol, -shares, transactionDate);
+}
+
+void
+Portfolio::transact(
+  std::string const& symbol,
+  int shareChange,
+  boost::gregorian::date const& transactionDate
+)
+{
+  if(0 == shareChange) {
+    throw ShareCountCannotBeZeroException();
+  }
+  mHoldings[symbol] = shareCount(symbol) + shareChange;
+  mPurchases.push_back(PurchaseRecord(shareChange, transactionDate));
 }
 
 unsigned int
