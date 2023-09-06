@@ -48,6 +48,12 @@ const std::string APortfolio::SAMSUNG{"SAMSUNG"};
 const boost::gregorian::date APortfolio::ArbitraryDate{
   boost::gregorian::date(2014, boost::date_time::Jan, 1)};
 
+bool
+operator==(PurchaseRecord const& lhs, PurchaseRecord const& rhs)
+{
+  return lhs.mShareCount == rhs.mShareCount && lhs.mDate == rhs.mDate;
+}
+
 TEST_F(APortfolio, IsEmptyWhenCreated)
 {
   ASSERT_TRUE(mPortfolio.isEmpty());
@@ -98,4 +104,13 @@ TEST_F(APortfolio, ReducesShareCountOfSymbolOnSell)
 TEST_F(APortfolio, ThrowsWhenSellingMoreSharesThanPurchased)
 {
   ASSERT_THROW(sell(SAMSUNG, 1), InsufficientSharesException);
+}
+
+TEST_F(APortfolio, SeparatePurchaseRecordsBySymbol)
+{
+  purchase(SAMSUNG, 5, ArbitraryDate);
+  purchase(IBM, 1, ArbitraryDate);
+
+  auto sales = mPortfolio.purchases(SAMSUNG);
+  ASSERT_THAT(sales, ElementsAre(PurchaseRecord(5, ArbitraryDate)));
 }

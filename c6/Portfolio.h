@@ -24,6 +24,14 @@ public:
   }
 };
 
+template<typename T>
+T
+Find(std::unordered_map<std::string, T> map, std::string const& key)
+{
+  auto it = map.find(key);
+  return it == map.end() ? T{} : it->second;
+}
+
 struct PurchaseRecord
 {
   PurchaseRecord(int shareCount, boost::gregorian::date const& date)
@@ -60,9 +68,26 @@ private:
     int shareChange,
     boost::gregorian::date const& transactionDate
   );
+
+  void throwIfShareCountIsZero(int shareChange) const;
+
+  void updateShareCount(std::string const& symbol, int shareChange);
+
+  void addPurchaseRecord(
+    std::string const& symbol,
+    int shareChange,
+    boost::gregorian::date const& date
+  );
+
+  void add(std::string const& symbol, PurchaseRecord&& record);
+
+  void initializePurchaseRecords(std::string const& symbol);
+
+  bool containSymbol(std::string const& symbol) const;
+
   bool mIsEmpty;
   std::unordered_map<std::string, unsigned int> mHoldings;
-  std::vector<PurchaseRecord> mPurchases;
+  std::unordered_map<std::string, std::vector<PurchaseRecord>> mPurchaseRecords;
 };
 
 #endif
