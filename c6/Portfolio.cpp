@@ -1,4 +1,5 @@
 #include "Portfolio.h"
+#include <numeric>
 #include <stdexcept>
 #include <unistd.h>
 
@@ -44,7 +45,6 @@ Portfolio::transact(
 )
 {
   throwIfShareCountIsZero(shareChange);
-  updateShareCount(symbol, shareChange);
   addPurchaseRecord(symbol, shareChange, transactionDate);
 }
 
@@ -54,12 +54,6 @@ Portfolio::throwIfShareCountIsZero(int shareChange) const
   if(0 == shareChange) {
     throw ShareCountCannotBeZeroException();
   }
-}
-
-void
-Portfolio::updateShareCount(std::string const& symbol, int shareChange)
-{
-  mHoldings[symbol] = shareCount(symbol) + shareChange;
 }
 
 void
@@ -78,29 +72,29 @@ Portfolio::addPurchaseRecord(
 void
 Portfolio::initializePurchaseRecords(std::string const& symbol)
 {
-  mPurchaseRecords[symbol] = std::vector<PurchaseRecord>();
+  mHoldings[symbol] = Holding();
 }
 
 void
 Portfolio::add(std::string const& symbol, PurchaseRecord&& record)
 {
-  mPurchaseRecords[symbol].push_back(record);
+  mHoldings[symbol].add(record);
 }
 
 bool
 Portfolio::containSymbol(std::string const& symbol) const
 {
-  return mPurchaseRecords.find(symbol) != mPurchaseRecords.end();
+  return mHoldings.find(symbol) != mHoldings.end();
 }
 
 unsigned int
 Portfolio::shareCount(std::string const& symbol) const
 {
-  return Find<unsigned int>(mHoldings, symbol);
+  return Find<Holding>(mHoldings, symbol).shareCount();
 }
 
 std::vector<PurchaseRecord>
 Portfolio::purchases(std::string const& symbol) const
 {
-  return mPurchaseRecords.find(symbol)->second;
+  return Find<Holding>(mHoldings, symbol).purchases();
 }

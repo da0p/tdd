@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Holding.h"
+
 class InsufficientSharesException : public std::exception
 {
 public:
@@ -31,18 +33,6 @@ Find(std::unordered_map<std::string, T> map, std::string const& key)
   auto it = map.find(key);
   return it == map.end() ? T{} : it->second;
 }
-
-struct PurchaseRecord
-{
-  PurchaseRecord(int shareCount, boost::gregorian::date const& date)
-    : mShareCount{shareCount}
-    , mDate{date}
-  {
-  }
-
-  int mShareCount;
-  boost::gregorian::date mDate;
-};
 
 class Portfolio
 {
@@ -71,8 +61,6 @@ private:
 
   void throwIfShareCountIsZero(int shareChange) const;
 
-  void updateShareCount(std::string const& symbol, int shareChange);
-
   void addPurchaseRecord(
     std::string const& symbol,
     int shareChange,
@@ -86,8 +74,7 @@ private:
   bool containSymbol(std::string const& symbol) const;
 
   bool mIsEmpty;
-  std::unordered_map<std::string, unsigned int> mHoldings;
-  std::unordered_map<std::string, std::vector<PurchaseRecord>> mPurchaseRecords;
+  std::unordered_map<std::string, Holding> mHoldings;
 };
 
 #endif
