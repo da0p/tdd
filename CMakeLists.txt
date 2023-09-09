@@ -12,5 +12,6 @@ include(cmake/compilerFlags.cmake)
 add_subdirectory(c2)
 add_subdirectory(c5)
 add_subdirectory(c6)
+add_subdirectory(c9)
 
 include(cmake/summary.cmake)
