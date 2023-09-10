@@ -34,7 +34,7 @@ public:
     return !mWorkQueue.empty();
   }
 
-  void add(Work work)
+  virtual void add(Work work)
   {
     std::lock_guard<std::mutex> block(mMutex);
     mWorkQueue.push_front(work);

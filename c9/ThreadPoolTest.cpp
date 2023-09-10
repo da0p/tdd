@@ -124,7 +124,25 @@ TEST_F(AThreadPool, HoldsUpUnderClientStress)
   waitForCountAndFailOnTimeout(NumberOfThreads * NumberOfWorkItems);
 }
 
-TEST_F(AThreadPool, DispatchesWorkToMultipleThreads)
+class MultipleThreadsPool : public AThreadPool
+{
+public:
+  std::set<std::thread::id> mThreadIds;
+
+  void SetUp() override {}
+
+  void TearDown() override {}
+
+  void addThreadIfUnique(std::thread::id const& id)
+  {
+    std::unique_lock<std::mutex> lock{m};
+    mThreadIds.insert(id);
+  }
+
+  size_t numberOfThreadsProcessed() { return mThreadIds.size(); }
+};
+
+TEST_F(MultipleThreadsPool, DispatchesWorkToMultipleThreads)
 {
   unsigned int numberOfThreads{2};
   mPool.start(numberOfThreads);

@@ -1,5 +1,6 @@
 #include "GeoServer.h"
 #include "Location.h"
+#include "ThreadPool.h"
 
 void
 GeoServer::track(std::string const& user)
@@ -54,11 +55,12 @@ GeoServer::isDifferentUserInBounds(
   return box.inBounds(each.second);
 }
 
-std::vector<User>
+void
 GeoServer::usersInBox(
   std::string const& user,
   double widthInMeters,
-  double heightInMeters
+  double heightInMeters,
+  GeoServerListener* listener
 ) const
 {
   auto location = mLocations.find(user)->second;
@@ -66,9 +68,20 @@ GeoServer::usersInBox(
 
   std::vector<User> users;
   for(auto& each : mLocations) {
-    if(isDifferentUserInBounds(each, user, box)) {
-      users.push_back(User{each.first, each.second});
-    }
+    Work work{[&] {
+      if(isDifferentUserInBounds(each, user, box)) {
+        users.push_back(User{each.first, each.second});
+        if(listener) {
+          listener->updated(User{each.first, each.second});
+        }
+      }
+    }};
+    mPool->add(work);
   }
-  return users;
+}
+
+void
+GeoServer::useThreadPool(std::shared_ptr<ThreadPool> pool)
+{
+  mPool = pool;
 }

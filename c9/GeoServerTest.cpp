@@ -1,6 +1,8 @@
 #include "GeoServer.h"
+#include "ThreadPool.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <memory>
 #include <string>
 
 class AGeoServer_UsersInBox : public ::testing::Test
@@ -17,8 +19,26 @@ public:
 
   Location aUserLocation{38, -103};
 
+  struct GeoServerUserTrackingListener : public GeoServerListener
+  {
+    void updated(User const& user) { mUsers.push_back(user); }
+
+    std::vector<User> mUsers;
+  };
+
+  GeoServerUserTrackingListener mTrackingListener;
+
+  struct SingleThreadedPool : public ThreadPool
+  {
+    void add(Work work) override { work.execute(); }
+  };
+
+  std::shared_ptr<ThreadPool> mPool;
+
   void SetUp() override
   {
+    mPool = std::make_shared<SingleThreadedPool>();
+    server.useThreadPool(mPool);
     server.track(aUser);
     server.track(bUser);
     server.track(cUser);
@@ -37,17 +57,21 @@ public:
 
 TEST_F(AGeoServer_UsersInBox, AnswersUsersInSpecifiedRange)
 {
+  mPool->start(0);
   server.updateLocation(
     bUser, Location{aUserLocation.go(Width / 2 - TenMeters, East)}
   );
 
-  auto users = server.usersInBox(aUser, Width, Height);
+  server.usersInBox(aUser, Width, Height, &mTrackingListener);
 
-  ASSERT_THAT(userNames(users), ::testing::ElementsAre(bUser));
+  ASSERT_THAT(
+    userNames(mTrackingListener.mUsers), ::testing::ElementsAre(bUser)
+  );
 }
 
 TEST_F(AGeoServer_UsersInBox, AnswersOnlyUsersWithinSpecifiedRange)
 {
+  mPool->start(0);
   server.updateLocation(
     bUser, Location{aUserLocation.go(Width / 2 + TenMeters, East)}
   );
@@ -55,13 +79,16 @@ TEST_F(AGeoServer_UsersInBox, AnswersOnlyUsersWithinSpecifiedRange)
     cUser, Location{aUserLocation.go(Width / 2 - TenMeters, East)}
   );
 
-  auto users = server.usersInBox(aUser, Width, Height);
+  server.usersInBox(aUser, Width, Height, &mTrackingListener);
 
-  ASSERT_THAT(userNames(users), ::testing::ElementsAre(cUser));
+  ASSERT_THAT(
+    userNames(mTrackingListener.mUsers), ::testing::ElementsAre(cUser)
+  );
 }
 
 TEST_F(AGeoServer_UsersInBox, HandlesLargeNumbersOfUsers)
 {
+  mPool->start(0);
   Location anotherLocation{aUserLocation.go(10, West)};
   unsigned int const lots{500000};
   for(unsigned int i = 0; i < lots; i++) {
@@ -70,6 +97,6 @@ TEST_F(AGeoServer_UsersInBox, HandlesLargeNumbersOfUsers)
     server.updateLocation(user, anotherLocation);
   }
 
-  auto users = server.usersInBox(aUser, Width, Height);
-  ASSERT_THAT(users.size(), ::testing::Eq(lots));
+  server.usersInBox(aUser, Width, Height, &mTrackingListener);
+  ASSERT_THAT(mTrackingListener.mUsers.size(), ::testing::Eq(lots));
 }
