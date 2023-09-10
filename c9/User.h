@@ -15,6 +15,7 @@ public:
   }
 
   [[nodiscard]] std::string const& name() { return mName; }
+  Location location() { return mLocation; }
 
 private:
   std::string mName;
