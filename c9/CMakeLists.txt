@@ -1,5 +1,7 @@
 add_executable(GeoServerTest
     LocationTest.cpp
+    AreaTest.cpp
+    GeoServerTest.cpp
 )
 
 target_link_libraries(GeoServerTest
@@ -12,4 +14,8 @@ target_link_libraries(GeoServerTest
 add_library(GeoServer
     Location.h
     Location.cpp
+    Area.h
+    Area.cpp
+    GeoServer.h
+    GeoServer.cpp
 )
