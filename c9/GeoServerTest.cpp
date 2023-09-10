@@ -59,3 +59,17 @@ TEST_F(AGeoServer_UsersInBox, AnswersOnlyUsersWithinSpecifiedRange)
 
   ASSERT_THAT(userNames(users), ::testing::ElementsAre(cUser));
 }
+
+TEST_F(AGeoServer_UsersInBox, HandlesLargeNumbersOfUsers)
+{
+  Location anotherLocation{aUserLocation.go(10, West)};
+  unsigned int const lots{500000};
+  for(unsigned int i = 0; i < lots; i++) {
+    std::string user{"user" + std::to_string(i)};
+    server.track(user);
+    server.updateLocation(user, anotherLocation);
+  }
+
+  auto users = server.usersInBox(aUser, Width, Height);
+  ASSERT_THAT(users.size(), ::testing::Eq(lots));
+}

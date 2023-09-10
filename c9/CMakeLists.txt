@@ -1,6 +1,7 @@
 add_executable(GeoServerTest
     LocationTest.cpp
     AreaTest.cpp
+    WorkTest.cpp
     GeoServerTest.cpp
 )
 
@@ -18,4 +19,5 @@ add_library(GeoServer
     Area.cpp
     GeoServer.h
     GeoServer.cpp
+    Work.h
 )
