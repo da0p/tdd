@@ -3,6 +3,7 @@ add_executable(GeoServerTest
     AreaTest.cpp
     WorkTest.cpp
     GeoServerTest.cpp
+    ThreadPoolTest.cpp
 )
 
 target_link_libraries(GeoServerTest
@@ -20,4 +21,5 @@ add_library(GeoServer
     GeoServer.h
     GeoServer.cpp
     Work.h
+    ThreadPool.h
 )
