@@ -43,5 +43,19 @@ TEST_F(AGeoServer_UsersInBox, AnswersUsersInSpecifiedRange)
 
   auto users = server.usersInBox(aUser, Width, Height);
 
-  ASSERT_THAT()
+  ASSERT_THAT(userNames(users), ::testing::ElementsAre(bUser));
+}
+
+TEST_F(AGeoServer_UsersInBox, AnswersOnlyUsersWithinSpecifiedRange)
+{
+  server.updateLocation(
+    bUser, Location{aUserLocation.go(Width / 2 + TenMeters, East)}
+  );
+  server.updateLocation(
+    cUser, Location{aUserLocation.go(Width / 2 - TenMeters, East)}
+  );
+
+  auto users = server.usersInBox(aUser, Width, Height);
+
+  ASSERT_THAT(userNames(users), ::testing::ElementsAre(cUser));
 }
