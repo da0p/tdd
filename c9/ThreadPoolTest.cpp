@@ -1,11 +1,44 @@
 #include "ThreadPool.h"
 
+#include <chrono>
+#include <condition_variable>
 #include <gmock/gmock.h>
 
 class AThreadPool : public ::testing::Test
 {
 public:
   ThreadPool mPool;
+  std::mutex m;
+  std::condition_variable wasExecuted;
+  unsigned int count{0};
+  std::vector<std::shared_ptr<std::thread>> mThreads;
+
+  void SetUp() override { mPool.start(); }
+
+  void TearDown() override
+  {
+    for(auto& t : mThreads) {
+      t->join();
+    }
+  }
+
+  void incrementCountAndNotify()
+  {
+    std::unique_lock<std::mutex> lock{m};
+    ++count;
+    wasExecuted.notify_all();
+  }
+
+  void waitForCountAndFailOnTimeout(
+    unsigned int expectedCount,
+    const std::chrono::milliseconds time = std::chrono::milliseconds(100)
+  )
+  {
+    std::unique_lock<std::mutex> lock{m};
+    ASSERT_TRUE(wasExecuted.wait_for(lock, time, [&] {
+      return expectedCount == count;
+    }));
+  }
 };
 
 TEST_F(AThreadPool, HasNoWorkOnCreation)
@@ -52,4 +85,59 @@ TEST_F(AThreadPool, HasWorkAfterRemovedButWorkRemains)
   mPool.pullWork();
 
   ASSERT_TRUE(mPool.hasWork());
+}
+
+TEST_F(AThreadPool, PullsWorkInAThread)
+{
+  Work work{[&] { incrementCountAndNotify(); }};
+  unsigned int NumberOfWorkItems{1};
+
+  mPool.add(work);
+
+  waitForCountAndFailOnTimeout(NumberOfWorkItems);
+}
+
+TEST_F(AThreadPool, ExecutesAllWork)
+{
+  Work work{[&] { incrementCountAndNotify(); }};
+  unsigned int NumberOfWorkItems{3};
+
+  for(unsigned int i = 0; i < NumberOfWorkItems; i++) {
+    mPool.add(work);
+  }
+
+  waitForCountAndFailOnTimeout(NumberOfWorkItems);
+}
+
+TEST_F(AThreadPool, HoldsUpUnderClientStress)
+{
+  Work work{[&] { incrementCountAndNotify(); }};
+  unsigned int NumberOfWorkItems{200};
+  unsigned int NumberOfThreads{200};
+
+  for(unsigned int i{0}; i < NumberOfThreads; i++)
+    mThreads.push_back(std::make_shared<std::thread>([&] {
+      for(unsigned int j{0}; j < NumberOfWorkItems; j++)
+        mPool.add(work);
+    }));
+
+  waitForCountAndFailOnTimeout(NumberOfThreads * NumberOfWorkItems);
+}
+
+TEST_F(AThreadPool, DispatchesWorkToMultipleThreads)
+{
+  unsigned int numberOfThreads{2};
+  mPool.start(numberOfThreads);
+  Work work{[&] {
+    addThreadIfUnique(std::this_thread::get_id());
+    incrementCountAndNotify();
+  }};
+  unsigned int NumberOfWorkItems{500};
+
+  for(unsigned int i = 0; i < NumberOfWorkItems; i++) {
+    mPool.add(work);
+  }
+
+  waitForCountAndFailOnTimeout(NumberOfWorkItems);
+  ASSERT_THAT(numberOfThreadsProcessed(), ::testing::Eq(numberOfThreads));
 }
